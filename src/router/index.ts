@@ -1,9 +1,9 @@
 import Router from 'koa-router';
-import { hzController } from 'controller';
+import { hz, api } from 'controller';
 
 const router = new Router()
 
-router.get('/hz', hzController.getHandler)
-router.get('/graphiql', hzController.getHandler)
+router.get('/hz', hz.getHandler)
+router.get('/api/graphiql', api.getGraphqlHandler)
 
 export default router
