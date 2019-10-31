@@ -1,0 +1,34 @@
+{
+  "name": "http_server",
+  "version": "1.0.0",
+  "description": "node_http",
+  "main": "index.js",
+  "scripts": {
+    "test": "test",
+    "dev": "ts-node-dev index.ts"
+  },
+  "keywords": [
+    "node",
+    "http"
+  ],
+  "author": "hansin",
+  "license": "ISC",
+  "devDependencies": {
+    "@types/ejs": "^2.6.3",
+    "@types/koa": "^2.0.51",
+    "@types/koa-router": "^7.0.42",
+    "@types/koa-views": "^2.0.3",
+    "@types/node": "^12.11.1",
+    "ts-node": "^8.4.1",
+    "ts-node-dev": "^1.0.0-pre.43",
+    "typescript": "^3.6.4"
+  },
+  "dependencies": {
+    "ejs": "^2.7.1",
+    "koa": "^2.10.0",
+    "koa-router": "^7.4.0",
+    "koa-views": "^6.2.1",
+    "reflect-metadata": "^0.1.13",
+    "tsconfig-paths": "^3.9.0"
+  }
+}
