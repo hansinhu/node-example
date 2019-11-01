@@ -2,6 +2,7 @@ import Koa from 'koa';
 import views from 'koa-views';
 import path from 'path';
 import { ApolloServer, gql } from 'apollo-server-koa'
+import { GraphQLScalarType, Kind } from 'graphql'
 
 import registerPath from './init'
 import router from 'router';
@@ -11,39 +12,99 @@ import config from 'config';
 // that together define the "shape" of queries that are executed against
 // your data.
 const typeDefs = gql`
-  # Comments in GraphQL strings (such as this one) start with the hash (#) symbol.
+  # 注释 (#) 符号.
+
+  enum AllowedColor {
+    RED
+    GREEN
+    BLUE
+  }
 
   # This "Book" type defines the queryable fields for every book in our data source.
   type Book {
     title: String
-    author: String
+    author: Author
   }
 
-  # The "Query" type is special: it lists all of the available queries that
-  # clients can execute, along with the return type for each. In this
-  # case, the "books" query returns an array of zero or more Books (defined above).
-  type Query {
+  type Author {
+    name: String
     books: [Book]
+  }
+  
+
+  # Query类型定义了数据图支持的读取操作
+  type Query {
+    getBooks: [Book]
+    getAuthors: [Author]
+    favoriteColor: AllowedColor
+    avatar(borderColor: AllowedColor): String
+  }
+
+  # Mutation类型定义了支持的写入操作。
+  type Mutation {
+    addBook(title: String, author: String): Book
+
+    # This mutation takes id and email parameters and responds with a User
+    updateUserEmail(id: ID!, email: String!): UpdateUserEmailMutationResponse
+  }
+
+  type User {
+    id: ID!
+    name: String!
+    email: String!
+  }
+
+  interface MutationResponse {
+    code: String!
+    success: Boolean!
+    message: String!
+  }
+  type UpdateUserEmailMutationResponse implements MutationResponse {
+    code: String!
+    success: Boolean!
+    message: String!
+    user: User
   }
 `;
 
 const books = [
   {
     title: 'Harry Potter and the Chamber of Secrets',
-    author: 'J.K. Rowling',
+    author: { name: 'J.K. Rowling' },
   },
   {
     title: 'Jurassic Park',
-    author: 'Michael Crichton',
+    author: { name: 'Michael Crichton' },
+  },
+];
+
+const authors = [
+  {
+    books: books,
+    name: 'J.K. Rowling',
+  },
+  {
+    books: books,
+    name: 'Michael Crichton',
   },
 ];
 
 // Resolvers define the technique for fetching the types defined in the
 // schema. This resolver retrieves books from the "books" array above.
 const resolvers = {
-  Query: {
-    books: () => books,
+  AllowedColor: {
+    RED: '#f00',
+    GREEN: '#0f0',
+    BLUE: '#00f',
   },
+  Query: {
+    getBooks: () => books,
+    getAuthors: () => authors,
+    favoriteColor: () => 'RED',
+    avatar: (parent: any, args: any) => {
+      // args.borderColor is 'RED', 'GREEN', or 'BLUE'
+    },
+  }
 };
 
 const server = new ApolloServer({
@@ -71,7 +132,7 @@ app.use(views(path.join(__dirname, './views'), {
 app.use(router.routes())
 
 app.listen(config.port, () => {
-  console.log(`🚀 Server ready at ${config.host}:${config.port}`)
+  console.log(`🚀 Node Server ready at ${config.host}:${config.port}`)
   if (typeof process.send === 'function') {
     process.send('ready')
   }
