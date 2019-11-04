@@ -1,115 +1,55 @@
 import Koa from 'koa';
 import views from 'koa-views';
 import path from 'path';
-import { ApolloServer, gql } from 'apollo-server-koa'
-import { GraphQLScalarType, Kind } from 'graphql'
+import { ApolloServer, gql, SchemaDirectiveVisitor } from 'apollo-server-koa'
+import { defaultFieldResolver } from 'graphql'
 
 import registerPath from './init'
 import router from 'router';
 import config from 'config';
 
+// Create (or import) a custom schema directive
+class UpperCaseDirective extends SchemaDirectiveVisitor {
+  visitFieldDefinition(field: any) {
+    const { resolve = defaultFieldResolver } = field;
+    field.resolve = async function (...args: any) {
+      const result = await resolve.apply(this, args);
+      if (typeof result === 'string') {
+        return result.toUpperCase();
+      }
+      return result;
+    };
+  }
+}
+
 // A schema is a collection of type definitions (hence "typeDefs")
 // that together define the "shape" of queries that are executed against
 // your data.
+// Construct a schema, using GraphQL schema language
 const typeDefs = gql`
-  # 注释 (#) 符号.
+  directive @upper on FIELD_DEFINITION
 
-  enum AllowedColor {
-    RED
-    GREEN
-    BLUE
-  }
-
-  # This "Book" type defines the queryable fields for every book in our data source.
-  type Book {
-    title: String
-    author: Author
-  }
-
-  type Author {
-    name: String
-    books: [Book]
-  }
-  
-
-  # Query类型定义了数据图支持的读取操作
   type Query {
-    getBooks: [Book]
-    getAuthors: [Author]
-    favoriteColor: AllowedColor
-    avatar(borderColor: AllowedColor): String
-  }
-
-  # Mutation类型定义了支持的写入操作。
-  type Mutation {
-    addBook(title: String, author: String): Book
-
-    # This mutation takes id and email parameters and responds with a User
-    updateUserEmail(id: ID!, email: String!): UpdateUserEmailMutationResponse
-  }
-
-  type User {
-    id: ID!
-    name: String!
-    email: String!
-  }
-
-  interface MutationResponse {
-    code: String!
-    success: Boolean!
-    message: String!
-  }
-  type UpdateUserEmailMutationResponse implements MutationResponse {
-    code: String!
-    success: Boolean!
-    message: String!
-    user: User
+    hello: String @upper
   }
 `;
 
-const books = [
-  {
-    title: 'Harry Potter and the Chamber of Secrets',
-    author: { name: 'J.K. Rowling' },
-  },
-  {
-    title: 'Jurassic Park',
-    author: { name: 'Michael Crichton' },
-  },
-];
-
-const authors = [
-  {
-    books: books,
-    name: 'J.K. Rowling',
-  },
-  {
-    books: books,
-    name: 'Michael Crichton',
-  },
-];
-
-// Resolvers define the technique for fetching the types defined in the
-// schema. This resolver retrieves books from the "books" array above.
+// Provide resolver functions for your schema fields
 const resolvers = {
-  AllowedColor: {
-    RED: '#f00',
-    GREEN: '#0f0',
-    BLUE: '#00f',
-  },
   Query: {
-    getBooks: () => books,
-    getAuthors: () => authors,
-    favoriteColor: () => 'RED',
-    avatar: (parent: any, args: any) => {
-      // args.borderColor is 'RED', 'GREEN', or 'BLUE'
+    hello: (_parent: any, _args: any, _context: any) => {
+      return 'Hello world!';
     },
-  }
-};
+  },
+}
+
 
 const server = new ApolloServer({
   typeDefs,
   resolvers,
+  schemaDirectives: {
+    upper: UpperCaseDirective,
+  },
   playground: process.env.CLUB_ENV !== 'prod',
   introspection: process.env.CLUB_ENV !== 'prod',
 });
