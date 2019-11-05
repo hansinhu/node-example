@@ -2,3 +2,5 @@
 
 1. koa-view
 2. graphQL
+3. koa-body
+4. koa-static
