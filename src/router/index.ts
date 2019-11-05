@@ -1,9 +1,17 @@
 import Router from 'koa-router';
-import { hz, api } from 'controller';
+import { view, api } from 'controller';
+import koaBody from 'koa-body'
+
+const formBody = koaBody({
+  multipart: true,
+})
 
 const router = new Router()
 
-router.get('/hz', hz.getHandler)
+router.get('/hz', view.getHzHandler)
+router.get('/upload', view.getUploadHandler)
+router.get(`/api/download/:fileName`, api.downloadFileHandler)
 router.get('/api/graphiql', api.getGraphqlHandler)
+router.post('/api/upload', formBody, api.uploadFileHandler)
 
 export default router
