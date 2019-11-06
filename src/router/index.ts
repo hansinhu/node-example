@@ -11,6 +11,7 @@ const router = new Router()
 router.get('/hz', view.getHzHandler)
 router.get('/upload', view.getUploadHandler)
 router.get(`/api/download/:fileName`, api.downloadFileHandler)
+router.get(`/api/mutil_download`, api.mutilDownloadFileHandler)
 router.get('/api/graphiql', api.getGraphqlHandler)
 router.post('/api/upload', formBody, api.uploadFileHandler)
 
