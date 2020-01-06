@@ -10,14 +10,21 @@ const transCityMap = {}
 
 const transStateList = Object.keys(stateMapObj).map((item, i) => {
   const citys = Object.keys(stateMapObj[item])
-  transCityMap[186 + i] = citys
   const widthIdItem = stateList.filter(state => state.label === item)
+  if (item === 'Orissa') {
+    console.log(widthIdItem)
+  }
+  const id = widthIdItem && widthIdItem[0] ? widthIdItem[0].value : 0
+  transCityMap[id] = citys
+  
   return {
-    value: widthIdItem && widthIdItem[0] ? widthIdItem[0].value : 0,
+    value: id,
     label: item,
     city: citys,
   }
 }).sort((a, b) => a.value - b.value)
+
+console.log(transCityMap[1868])
 
 fs.writeFileSync('./trans-end/city-map.js', `const cistyMapJsonStr = '${JSON.stringify(transCityMap)}'`)
 fs.writeFileSync('./trans-end/in.js', `${JSON.stringify(transStateList)}`)
