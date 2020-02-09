@@ -1,6 +1,7 @@
 import Koa from 'koa';
 import views from 'koa-views';
 import path from 'path';
+import nodeSchedule from 'node-schedule'
 import { ApolloServer, gql, SchemaDirectiveVisitor } from 'apollo-server-koa'
 import { defaultFieldResolver } from 'graphql'
 
@@ -53,6 +54,15 @@ const server = new ApolloServer({
   playground: process.env.CLUB_ENV !== 'prod',
   introspection: process.env.CLUB_ENV !== 'prod',
 });
+
+// 定时任务测试
+function scheduleCronstyle(){
+  nodeSchedule.scheduleJob('1 1 9-10 * * *', function(){
+    console.log('scheduleCronstyle:' + new Date());
+  }); 
+}
+
+scheduleCronstyle();
 
 const app = new Koa();
 
