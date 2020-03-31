@@ -31,7 +31,7 @@ class RecipeResolver {
   }
 
   @Mutation(returns => Boolean)
-  @Authorized(Roles.Admin)
+  @Authorized('ADMIN')
   async removeRecipe(@Arg("id") id: string) {
     try {
       await this.recipeService.removeById(id);
@@ -41,3 +41,5 @@ class RecipeResolver {
     }
   }
 }
+
+export default RecipeResolver
