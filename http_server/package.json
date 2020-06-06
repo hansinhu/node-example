@@ -30,7 +30,7 @@
     "typescript": "^3.6.4"
   },
   "dependencies": {
-    "apollo-server-koa": "^2.9.7",
+    "apollo-server-koa": "^2.14.2",
     "axios": "^0.19.2",
     "class-transformer": "^0.2.3",
     "ejs": "^2.7.1",
