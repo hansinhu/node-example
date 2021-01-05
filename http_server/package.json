@@ -31,7 +31,7 @@
   },
   "dependencies": {
     "apollo-server-koa": "^2.9.7",
-    "axios": "^0.19.2",
+    "axios": "^0.21.1",
     "class-transformer": "^0.2.3",
     "ejs": "^2.7.1",
     "graphql-tools": "^4.0.6",
